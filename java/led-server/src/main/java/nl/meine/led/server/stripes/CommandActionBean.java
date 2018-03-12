@@ -26,6 +26,8 @@ package nl.meine.led.server.stripes;
 import javax.persistence.EntityManager;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.StrictBinding;
@@ -33,6 +35,7 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.validation.EnumeratedTypeConverter;
 import net.sourceforge.stripes.validation.Validate;
 import net.sourceforge.stripes.validation.ValidateNestedProperties;
+import nl.meine.led.server.VarHolder;
 import nl.meine.led.server.hibernate.LedAction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,10 +61,17 @@ public class CommandActionBean  implements ActionBean{
         @Validate(field = "commandparameters")
     })
     private LedAction action;
-    
+
+    @DefaultHandler
+    public Resolution view(){
+        return new ForwardResolution(JSP);
+    }
 
     public Resolution add(){
         log.debug("Posting action... " + action.toString());
+     /*   VarHolder in = VarHolder.getInstance();
+        in.setCommand(action.getCommand());
+        in.setParams(action.getCommandparameters());*/
         EntityManager em = Stripersist.getEntityManager();
         em.persist(action);
         em.getTransaction().commit();

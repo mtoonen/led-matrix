@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     <stripes:layout-component name="body">
 asdfasdf
+${actionBean.current.commandparameters} sdf
     </stripes:layout-component>
 
 </stripes:layout-render>

@@ -1,17 +1,40 @@
-<%-- 
-    Document   : view.jsp
-    Created on : Feb 17, 2018, 4:23:28 PM
-    Author     : Meine Toonen
+<%--
+Copyright (C) 2016 B3Partners B.V.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-        <h1>Hesdfgdgllo Worsadsdafsadfld!</h1>
-    </body>
-</html>
+<%@include file="/WEB-INF/jsp/taglibs.jsp"%>
+
+<stripes:layout-render name="/WEB-INF/jsp/menu.jsp">
+    <stripes:layout-component name="head">
+        <title>asdfasdf</title>
+    </stripes:layout-component>
+
+    <stripes:layout-component name="header">
+        <jsp:include page="/WEB-INF/jsp/header.jsp"/>
+    </stripes:layout-component>
+
+    <stripes:layout-component name="body">
+        <stripes:form beanclass="nl.meine.led.server.stripes.CommandActionBean">
+            <stripes:select name="action.command">
+                <stripes:options-enumeration enum="nl.meine.led.server.hibernate.CommandType"/>
+            </stripes:select> <br/>
+            <stripes:text name="action.commandparameters"/> <br/>
+            <stripes:submit name="add" value="Voeg toe"/>
+        </stripes:form>
+    </stripes:layout-component>
+
+</stripes:layout-render>

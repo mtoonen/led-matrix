@@ -32,6 +32,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.action.UrlBinding;
+import nl.meine.led.server.VarHolder;
 import nl.meine.led.server.hibernate.CommandType;
 import nl.meine.led.server.hibernate.LedAction;
 import nl.meine.led.server.hibernate.Status;
@@ -67,11 +68,14 @@ public class MatrixActionBean implements ActionBean{
     }
     
     public Resolution poll(){
-        LedAction la = new LedAction();
-        la.setCommand(CommandType.SHOW_TEXT);
-        la.setCommandparameters("PipoTaart16");
+        VarHolder instance = VarHolder.getInstance();
+      /*  LedAction la = new LedAction();
+        la.setCommand(instance.getCommand());
+        la.setCommandparameters(instance.getParams());
         la.setId(12);
-        
+        */
+        EntityManager em = Stripersist.getEntityManager();
+        LedAction la = em.createQuery("from LedAction order by id DESC", LedAction.class).setMaxResults(1).getSingleResult();
         return new StreamingResolution("plain/text", la.toPacket()).setAttachment(true);
     }
     

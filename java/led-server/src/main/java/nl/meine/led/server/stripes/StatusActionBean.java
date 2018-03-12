@@ -14,6 +14,7 @@ import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.action.UrlBinding;
+import nl.meine.led.server.VarHolder;
 import nl.meine.led.server.hibernate.LedAction;
 import org.stripesstuff.stripersist.Stripersist;
 
@@ -31,7 +32,7 @@ public class StatusActionBean implements ActionBean{
     private LedAction current;
     
     private List<LedAction> actions;
-
+    
     // <editor-fold desc="getters and setters" defaultstate="collapsed">
     public LedAction getCurrent() {
         return current;
@@ -61,8 +62,11 @@ public class StatusActionBean implements ActionBean{
     @DefaultHandler
     public Resolution view(){
         EntityManager em  = Stripersist.getEntityManager();
-        
-        current = em.createQuery("FROM LedAction WHERE running = true", LedAction.class).getSingleResult();
+        VarHolder i = VarHolder.getInstance();
+        current = new LedAction();
+        current.setCommand(i.getCommand());
+        current.setCommandparameters(i.getParams());
+        //current = em.createQuery("FROM LedAction WHERE running = true", LedAction.class).getSingleResult();
         actions = em.createQuery("FROM LedAction", LedAction.class).getResultList();
         return new ForwardResolution(JSP);
     }
