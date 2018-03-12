@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -22,6 +24,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Spinner spinner = (Spinner) findViewById(R.id.commandType);
+// Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.commandTypeArray, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
     }
 
     public void sendMessage(View v){
@@ -38,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
 // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         //String url ="http://www.google.com";
-        String url = "https://led.meinetoonen.nl/led-server/Post.action?action.command=" +message;
+        //http://localhost:8084/led-server/action/command?action.commandparameters=werwerwer&action.command=SHOW_TEXT&add=true
+        String url = "https://led.meinetoonen.nl/led-server/action/command?action.command=SHOW_TEXT&add=true" +
+                "&action.commandparameters=" +message;
 
 // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
