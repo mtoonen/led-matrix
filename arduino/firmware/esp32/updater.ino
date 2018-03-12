@@ -1,5 +1,5 @@
 int lastupdate = 0;
-int updateThreshold = 1000;
+int updateThreshold = 1000 * 5;
 void setupOta(){
     
 
@@ -33,8 +33,8 @@ void setupOta(){
       Serial.println("\nEnd");
     })
     .onProgress([](unsigned int progress, unsigned int total) {
-        blinkLed(ledPinGreen,1);
-         blinkLed(ledPinRed,1);
+       // blinkLed(ledPinGreen,1);
+     //    blinkLed(ledPinRed,1);
       Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
     })
     .onError([](ota_error_t error) {
@@ -48,16 +48,11 @@ void setupOta(){
     });
 
   ArduinoOTA.begin();
-
-  Serial.println("Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
 }
 
 void update(){
     int currentTime = millis();
     if( (currentTime - lastupdate ) > updateThreshold){
-        Serial.println("Update");
         lastupdate = currentTime;
         ArduinoOTA.handle();
     }
