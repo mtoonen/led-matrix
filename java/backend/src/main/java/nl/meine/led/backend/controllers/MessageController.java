@@ -28,11 +28,12 @@ public class MessageController {
     }
 
     @PostMapping("/save")
-    public void save(@RequestBody Message msg){
-        repo.save(msg);
+    public Message save(@RequestBody Message msg){
+        msg = repo.save(msg);
+        return msg;
     }
 
-    @PutMapping("/processed/{id}")
+    @GetMapping("/processed/{id}")
     public void setProcessed(@PathVariable int id){
         Message msg = repo.findById(id).orElseThrow();
         msg.setProcessed(true);
