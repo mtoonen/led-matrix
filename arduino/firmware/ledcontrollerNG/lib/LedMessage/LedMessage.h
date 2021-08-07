@@ -4,6 +4,7 @@
 #include <Arduino.h>
 enum MessageType{
     TEXT,
+    TEXT_SCROLLING,
     SHAPE,
     UNDEFINED
 
@@ -11,8 +12,12 @@ enum MessageType{
 
 struct LedMessage{
     int id;
-    String message;
+    String payload;
+    int r;
+    int g;
+    int b;
     MessageType type;
     bool processed;
+    bool shown;
 };
 #endif

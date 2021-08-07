@@ -142,17 +142,23 @@ int doRequest(String requestPath){
 LedMessage* parseInput(DynamicJsonDocument doc){
   LedMessage* m = new LedMessage();
   
-  m->message = doc["message"].as<String>();
   m->id = doc["id"].as<long>();
+  m->payload = doc["payload"].as<String>();
   m->processed = doc["processed"].as<bool>();
+  m->r = doc["r"].as<int>();
+  m->g = doc["g"].as<int>();
+  m->b = doc["b"].as<int>();
   String type = doc["type"].as<String>();
   MessageType mt = UNDEFINED;
 
+Serial.print("Type="); Serial.println(type);
   if(type.equals("TEXT")){
       mt = TEXT;
   }else if(type.equals("SHAPE")){
       mt = SHAPE;
-  }else {
+  }else if(type.equals("TEXT_SCROLLING")){
+    mt = TEXT_SCROLLING;
+  }else{
       mt = TEXT;
   }
   m->type = mt;
@@ -163,7 +169,7 @@ LedMessage* parseInput(DynamicJsonDocument doc){
 void printLedMessage(LedMessage* lm){
   Serial.println("*****");
   Serial.print("id: ") + Serial.println(lm->id);
-  Serial.print("message: ") + Serial.println(lm->message);
+  Serial.print("payload: ") + Serial.println(lm->payload);
   Serial.print("type: ") + Serial.println(lm->type);
   Serial.print("processed: ") + Serial.println(lm->processed);
 }

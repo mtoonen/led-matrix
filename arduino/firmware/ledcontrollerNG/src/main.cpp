@@ -1,30 +1,45 @@
 #include <Arduino.h>
-#include <Matrix.h>
+#include "MatrixMeine.h"
 #include <WifiMeine.h>
 #include <LedMessage.h>
 
+MatrixMeine mmatrix;
 void setup()
 {
+  
   Serial.begin(9600);
   // put your setup code here, to run once:
   Serial.println("Initializing matrix");
-  initMatrix();
-  drawText("Initializing WiFi...");
-  initWifi();
-  drawText("Connected");
+  mmatrix.initMatrix();
+  LedMessage* msg = new LedMessage();
+  msg->type = TEXT;
+  msg->payload = "Initializing WiFi...";
+  mmatrix.drawText(msg);
+ // initWifi();
+  msg->payload = "Connected";
+  mmatrix.drawText(msg);
+
+  LedMessage* msg2 = new LedMessage();
+  msg2->type = TEXT_SCROLLING;
+  msg2->payload = "meine is cool";
+  mmatrix.drawMessage(msg2);
 }
 
 void loop()
 {
+  mmatrix.process();
+  delay(20);
   // put your main code here, to run repeatedly:
 
-  LedMessage *m = readServer();
-  if (m != NULL && m->message != NULL && m->message != "")
+ /* LedMessage *m = readServer();
+  if (m != NULL && m->payload != NULL && m->payload != "")
   {
     Serial.println(m->type);
-    drawText(m->message);
+    mmatrix.drawMessage(m);
     writeMessageProcessed(m->id);
   }
-  delay(5000);
-  // drawText("meine is echt cool");
+  if(mmatrix.process()){
+
+  }
+  delay(5000);*/
 }
