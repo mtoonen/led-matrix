@@ -16,6 +16,7 @@ MatrixMeine::MatrixMeine(){
 void MatrixMeine::initMatrix(){
   matrix.begin();
   textX = matrix.width();
+  isBusy = false;
 }
 
 bool MatrixMeine::process(){
@@ -57,7 +58,7 @@ void MatrixMeine::drawText(LedMessage* msg){
 void MatrixMeine::scrollText(LedMessage* msg){
   matrix.fillScreen(0);
   if(!msg->shown){
-    textMin = (int16_t)sizeof(msg->payload) * -8;
+    textMin = msg->payload.length() * -6;
     Serial.print("Textmin:"); Serial.println(textMin);
     msg->shown = true;
     matrix.setTextWrap(false); // Allow text to run off right edge
@@ -67,6 +68,7 @@ void MatrixMeine::scrollText(LedMessage* msg){
   matrix.print(msg->payload);
   
   if((--textX) < textMin){
+    Serial.println("not busy");
     textX = matrix.width();
     isBusy = false;
   }else{
