@@ -6,31 +6,28 @@
 #include <ArduinoJson.h>
 #include <LedMessage.h>
 #include "arduino_secrets.h" 
+#include <StreamUtils.h>
+#include <TimedAction.h>
 
 
+class WifiMeine{
+    public:
+        WifiMeine();
+        void initWifi();
+        LedMessage* readServer();
+        boolean checkServer();
+        void writeMessageProcessed(int id);
+        void setMatrix(TimedAction& matrixThread);
+    private:
+        int doRequest(String requestPath);
+        void printLedMessage(LedMessage* lm);
+        LedMessage* parseInput(DynamicJsonDocument doc);
+        void printWifiStatus();
 
-// WIFI
-#define SPIWIFI       SPI  // The SPI port
-#define SPIWIFI_SS    13   // Chip select pin
-#define ESP32_RESETN  12   // Reset pin
-#define SPIWIFI_ACK   11   // a.k.a BUSY or READY pin
-#define ESP32_GPIO0   -1
-
-
-// if you don't want to use DNS (and reduce your sketch size)
-// use the numeric IP instead of the name for the server:
-//IPAddress server(74,125,232,128);  // numeric IP for Google (no DNS)
-
-#define SERVER "led.meinetoonen.nl"
-#define PATH   "/led/messages/unprocessed"
-#define PATHPROCESSED   "/led/messages/processed/"
-
-
-    void initWifi();
-    void printWifiStatus();
-    LedMessage* readServer();
-    int doRequest(String requestPath);
-    void writeMessageProcessed(int id);
-    void printLedMessage(LedMessage* lm);
-    LedMessage* parseInput(DynamicJsonDocument doc);
+        TimedAction* matrixThread;
+        const char* ssid = SECRET_SSID;
+        const char* pass = SECRET_PASS;
+        int status = WL_IDLE_STATUS;
+        int keyIndex = 0;
+};
 #endif

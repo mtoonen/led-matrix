@@ -1,9 +1,37 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <SPI.h>
 #include "MatrixMeine.h"
-#include <WifiMeine.h>
 #include <LedMessage.h>
+#include <WifiMeine.h>
+#include <TimedAction.h>
+
 
 MatrixMeine mmatrix;
+WifiMeine mwifi;
+
+
+void checkWifi(){
+  if(mwifi.checkServer()){
+    LedMessage *m = mwifi.readServer();
+    if (m != NULL && m->payload != NULL && m->payload != "")
+    {
+      Serial.println(m->type);
+      mmatrix.drawMessage(m);
+      mwifi.writeMessageProcessed(m->id);
+    }
+  }
+}
+
+void checkMatrix(){
+  mmatrix.process();
+}
+int matrixDelay = 20;
+
+
+
+TimedAction wifiThread = TimedAction(5000,checkWifi);
+TimedAction matrixThread = TimedAction(20,checkMatrix);
 void setup()
 {
   
@@ -15,7 +43,8 @@ void setup()
   msg->type = TEXT;
   msg->payload = "Initializing WiFi...";
   mmatrix.drawText(msg);
- // initWifi();
+  mwifi.setMatrix(matrixThread);
+  mwifi.initWifi();
   msg->payload = "Connected";
   mmatrix.drawText(msg);
 
@@ -27,19 +56,12 @@ void setup()
 
 void loop()
 {
-  mmatrix.process();
-  delay(20);
-  // put your main code here, to run repeatedly:
-
- /* LedMessage *m = readServer();
-  if (m != NULL && m->payload != NULL && m->payload != "")
-  {
-    Serial.println(m->type);
-    mmatrix.drawMessage(m);
-    writeMessageProcessed(m->id);
+  
+  // wifiThread.check();
+  if(!mmatrix.isBusy){
+    wifiThread.check();
+    matrixThread.check();
+  }else{
+    matrixThread.check();
   }
-  if(mmatrix.process()){
-
-  }
-  delay(5000);*/
 }

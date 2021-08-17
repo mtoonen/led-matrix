@@ -14,8 +14,10 @@ class MatrixMeine{
         void drawText(LedMessage* msg);
         void scrollText(LedMessage* msg);
         void drawShape(LedMessage* msg);
+        bool isBusy = false;
     private:
         LedMessage* current;
         int16_t    textX, textMin;
+        
 };
 #endif
