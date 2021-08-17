@@ -1,1 +1,22 @@
-<p>creator works!</p>
+<form class="example-form" #messageForm="ngForm" xmlns="http://www.w3.org/1999/html">
+  <mat-form-field appearance="fill">
+    <mat-label>Type</mat-label>
+    <mat-select (selectionChange)="typeChanged($event.value)">
+      <mat-option *ngFor="let name of enumKeys" [value]="name">
+        {{mt[name]}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field><br/>
+
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label for="payload">Payload</mat-label>
+    <input [(ngModel)]="model.payload" id="payload" name="payload" matInput placeholder="Voorbeeld">
+  </mat-form-field>
+
+  <div class="colorpicker">
+
+    <color-circle (onChangeComplete)="colorChanged($event)"></color-circle>
+  </div><br/>
+  {{model | json}}
+  <button mat-raised-button (click)="send()">Verstuur</button>
+</form>
