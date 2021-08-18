@@ -16,7 +16,7 @@ export class CreatorComponent implements OnInit {
   public selectedmessagetype = MessageType.TEXT;
   public mt = MessageType;
   public color = new Color(255, 143, 0);
-  public model = new Message('', MessageType.SHAPE);
+  public model = new Message('', MessageType.TEXT_SCROLLING);
 
   constructor(private message: MessageService) {
     this.enumKeys = Object.keys(this.mt);

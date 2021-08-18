@@ -7,8 +7,6 @@
 #define SPIWIFI_ACK 11  // a.k.a BUSY or READY pin
 #define ESP32_GPIO0 -1
 
-//#define SERVER "led.meinetoonen.nl"
-#define SERVER "192.168.68.113"
 #define PATH "/led/messages/unprocessed"
 #define PATHCHECK "/led/messages/checkunprocessed"
 #define PATHPROCESSED "/led/messages/processed/"
@@ -171,6 +169,10 @@ void WifiMeine::printLedMessage(LedMessage *lm)
   Serial.println(lm->type);
   Serial.print("processed: ");
   Serial.println(lm->processed);
+  Serial.print("RGB:");
+  Serial.print(lm->r);Serial.print("-");
+  Serial.print(lm->g);Serial.print("-");
+  Serial.println(lm->b);
 }
 
 int WifiMeine::doRequest(String requestPath)

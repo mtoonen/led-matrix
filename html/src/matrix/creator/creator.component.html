@@ -1,7 +1,7 @@
 <form class="example-form" #messageForm="ngForm" xmlns="http://www.w3.org/1999/html">
   <mat-form-field appearance="fill">
     <mat-label>Type</mat-label>
-    <mat-select (selectionChange)="typeChanged($event.value)">
+    <mat-select (selectionChange)="typeChanged($event.value)" [value]="enumKeys[1]">
       <mat-option *ngFor="let name of enumKeys" [value]="name">
         {{mt[name]}}
       </mat-option>
@@ -17,6 +17,6 @@
 
     <color-circle (onChangeComplete)="colorChanged($event)"></color-circle>
   </div><br/>
-  {{model | json}}
+
   <button mat-raised-button (click)="send()">Verstuur</button>
 </form>

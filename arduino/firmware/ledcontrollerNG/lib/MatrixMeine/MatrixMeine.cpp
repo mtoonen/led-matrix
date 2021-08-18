@@ -19,7 +19,6 @@ void MatrixMeine::initMatrix()
   isBusy = false;
 }
 
-
 void MatrixMeine::setLoading(double percentage)
 {
   setLoading(percentage, "Load");
@@ -27,10 +26,12 @@ void MatrixMeine::setLoading(double percentage)
 
 void MatrixMeine::setLoading(double percentage, String loadText)
 {
-  Serial.print("percentage:");Serial.println(percentage);
-  Serial.print("loadText:");Serial.println(loadText);
+  Serial.print("percentage:");
+  Serial.println(percentage);
+  Serial.print("loadText:");
+  Serial.println(loadText);
   matrix.fillScreen(0);
-  matrix.setCursor(2, 0);
+  matrix.setCursor(6, 0);
   matrix.print(loadText);
   matrix.drawRect(xBox, yBox, widthBox, heightBox, matrix.Color333(7, 7, 0));
   int num = ((int)percentage / (100 / widthFill) + 1);
@@ -40,19 +41,22 @@ void MatrixMeine::setLoading(double percentage, String loadText)
 
 bool MatrixMeine::process()
 {
-  switch (this->current->type)
+  if (this->current != NULL)
   {
-  case TEXT:
-    drawText(this->current);
-    break;
-  case TEXT_SCROLLING:
-    scrollText(this->current);
-    break;
-  case SHAPE:
-    drawShape(this->current);
-    break;
-  default:
-    return false;
+    switch (this->current->type)
+    {
+    case TEXT:
+      drawText(this->current);
+      break;
+    case TEXT_SCROLLING:
+      scrollText(this->current);
+      break;
+    case SHAPE:
+      drawShape(this->current);
+      break;
+    default:
+      return false;
+    }
   }
   return true;
 }
@@ -70,8 +74,8 @@ void MatrixMeine::drawText(LedMessage *msg)
     matrix.setTextWrap(true); // Allow text to run off right edge
     Serial.println("Drawtext" + msg->processed);
     matrix.fillScreen(0);
-    matrix.setTextColor(matrix.ColorHSV(100, 255, 255, true));
-    matrix.setCursor(0, 0);
+
+    matrix.setCursor(0,12);
     matrix.print(msg->payload);
     msg->shown = true;
     isBusy = false;
@@ -87,10 +91,11 @@ void MatrixMeine::scrollText(LedMessage *msg)
     Serial.print("Textmin:");
     Serial.println(textMin);
     msg->shown = true;
-    matrix.setTextWrap(false); // Allow text to run off right edge
+    matrix.setTextWrap(false);
+    matrix.setCursor(0,12);
   }
 
-  matrix.setCursor(textX, 1);
+  matrix.setCursor(textX, 12);
   matrix.print(msg->payload);
 
   if ((--textX) < textMin)
@@ -106,6 +111,9 @@ void MatrixMeine::scrollText(LedMessage *msg)
 
 void MatrixMeine::setMessage(LedMessage *msg)
 {
-  this->current = msg;
-  matrix.setTextColor(matrix.Color888(msg->r, msg->g, msg->b, true));
+  if (msg != NULL)
+  {
+    this->current = msg;
+    matrix.setTextColor(matrix.Color888(msg->r, msg->g, msg->b, false));
+  }
 }

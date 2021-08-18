@@ -69,7 +69,9 @@ void checkWifi()
 void checkMatrix()
 {
   //  Serial.println("checkmatrix");
-  mmatrix.process();
+  if(!mmatrix.process()){
+    mmatrix.setMessage(NULL);
+  }
 }
 
 void loop()
