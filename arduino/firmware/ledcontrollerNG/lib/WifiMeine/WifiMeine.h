@@ -8,6 +8,7 @@
 #include "arduino_secrets.h" 
 #include <StreamUtils.h>
 #include <TimedAction.h>
+#include <MatrixMeine.h>
 
 
 class WifiMeine{
@@ -17,7 +18,7 @@ class WifiMeine{
         LedMessage* readServer();
         boolean checkServer();
         void writeMessageProcessed(int id);
-        void setMatrix(TimedAction& matrixThread);
+        void setMatrix(TimedAction& matrixThread, MatrixMeine& mmatrix);
     private:
         int doRequest(String requestPath);
         void printLedMessage(LedMessage* lm);
@@ -25,6 +26,7 @@ class WifiMeine{
         void printWifiStatus();
 
         TimedAction* matrixThread;
+        MatrixMeine* mmatrix;
         const char* ssid = SECRET_SSID;
         const char* pass = SECRET_PASS;
         int status = WL_IDLE_STATUS;

@@ -12,6 +12,7 @@ WifiMeine mwifi;
 
 TimedAction wifiThread = TimedAction(5000, checkWifi);
 TimedAction matrixThread = TimedAction(20, checkMatrix);
+bool wifiOn = true;
 
 void setup()
 {
@@ -22,38 +23,52 @@ void setup()
   msg->type = TEXT;
   msg->payload = "Initializing WiFi...";
   mmatrix.drawText(msg);
-  mwifi.setMatrix(matrixThread);
-  mwifi.initWifi();
+  mwifi.setMatrix(matrixThread, mmatrix);
+
+  if (wifiOn)
+  {
+    mwifi.initWifi();
+  }
+  msg->shown = false;
+  msg->g = 255;
   msg->payload = "Connected";
   mmatrix.drawText(msg);
+  //  mmatrix.setLoading(10);
 
   LedMessage *msg2 = new LedMessage();
   msg2->type = TEXT_SCROLLING;
-  msg2->payload = "Waiting to received123456";
-  mmatrix.drawMessage(msg2);
+  msg2->b = 255;
+  msg2->payload = "Waiting to receive";
+  mmatrix.setMessage(msg2);
+  // mmatrix.setLoading(10);
 }
 
 void checkWifi()
 {
-  if (mwifi.checkServer())
+  if (wifiOn && mwifi.checkServer())
   {
+    mmatrix.setLoading(10);
     LedMessage *m = mwifi.readServer();
+    mmatrix.setLoading(95);
     if (m != NULL && m->payload != NULL && m->payload != "")
     {
       Serial.println(m->type);
-      mmatrix.drawMessage(m);
+      mmatrix.setMessage(m);
+      mmatrix.setLoading(100);
+      matrixThread.check();
       mwifi.writeMessageProcessed(m->id);
+      matrixThread.check();
     }
-  }else{
+  }
+  else
+  {
     matrixThread.check();
-
   }
 }
 
-
 void checkMatrix()
 {
-//  Serial.println("checkmatrix");
+  //  Serial.println("checkmatrix");
   mmatrix.process();
 }
 
@@ -66,7 +81,7 @@ void loop()
   }
   else
   {
-  //  Serial.println("chyeck matrix");
+    //  Serial.println("chyeck matrix");
     matrixThread.check();
   }
 }

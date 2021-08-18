@@ -1,49 +1,72 @@
 #include <MatrixMeine.h>
 
-       
-#define CLK A4 
-#define OE   9
+#define CLK A4
+#define OE 9
 #define LAT 10
-#define A   A0
-#define B   A1
-#define C   A2
-#define D   A3
+#define A A0
+#define B A1
+#define C A2
+#define D A3
 RGBmatrixPanel matrix(A, B, C, D, CLK, LAT, OE, false);
-MatrixMeine::MatrixMeine(){
-  
+MatrixMeine::MatrixMeine()
+{
 }
 
-void MatrixMeine::initMatrix(){
+void MatrixMeine::initMatrix()
+{
   matrix.begin();
   textX = matrix.width();
   isBusy = false;
 }
 
-bool MatrixMeine::process(){
-  switch(this->current->type){
-    case TEXT:
-      drawText(this->current);
-      break;
-    case TEXT_SCROLLING:
-      scrollText(this->current);
-      break;
-    case SHAPE:
-      drawShape(this->current);
-      break;
-    default:
-      return false;
+
+void MatrixMeine::setLoading(double percentage)
+{
+  setLoading(percentage, "Load");
+}
+
+void MatrixMeine::setLoading(double percentage, String loadText)
+{
+  Serial.print("percentage:");Serial.println(percentage);
+  Serial.print("loadText:");Serial.println(loadText);
+  matrix.fillScreen(0);
+  matrix.setCursor(2, 0);
+  matrix.print(loadText);
+  matrix.drawRect(xBox, yBox, widthBox, heightBox, matrix.Color333(7, 7, 0));
+  int num = ((int)percentage / (100 / widthFill) + 1);
+  matrix.fillRect(xBox + 1, yBox + 1, min(num, widthFill), heightFill, matrix.Color333(7, 0, 0));
+  delay(100);
+}
+
+bool MatrixMeine::process()
+{
+  switch (this->current->type)
+  {
+  case TEXT:
+    drawText(this->current);
+    break;
+  case TEXT_SCROLLING:
+    scrollText(this->current);
+    break;
+  case SHAPE:
+    drawShape(this->current);
+    break;
+  default:
+    return false;
   }
   return true;
 }
 
-void MatrixMeine::drawShape(LedMessage* msg){
+void MatrixMeine::drawShape(LedMessage *msg)
+{
   Serial.println("drawShape" + msg->processed);
   isBusy = false;
-  
 }
 
-void MatrixMeine::drawText(LedMessage* msg){
-  if(!msg->shown){
+void MatrixMeine::drawText(LedMessage *msg)
+{
+  if (!msg->shown)
+  {
     matrix.setTextWrap(true); // Allow text to run off right edge
     Serial.println("Drawtext" + msg->processed);
     matrix.fillScreen(0);
@@ -55,30 +78,34 @@ void MatrixMeine::drawText(LedMessage* msg){
   }
 }
 
-void MatrixMeine::scrollText(LedMessage* msg){
+void MatrixMeine::scrollText(LedMessage *msg)
+{
   matrix.fillScreen(0);
-  if(!msg->shown){
+  if (!msg->shown)
+  {
     textMin = msg->payload.length() * -6;
-    Serial.print("Textmin:"); Serial.println(textMin);
+    Serial.print("Textmin:");
+    Serial.println(textMin);
     msg->shown = true;
     matrix.setTextWrap(false); // Allow text to run off right edge
   }
 
   matrix.setCursor(textX, 1);
   matrix.print(msg->payload);
-  
-  if((--textX) < textMin){
-    Serial.println("not busy");
+
+  if ((--textX) < textMin)
+  {
     textX = matrix.width();
     isBusy = false;
-  }else{
+  }
+  else
+  {
     isBusy = true;
   }
-
 }
 
-void MatrixMeine::drawMessage(LedMessage* msg){
+void MatrixMeine::setMessage(LedMessage *msg)
+{
   this->current = msg;
-  isBusy = false;
+  matrix.setTextColor(matrix.Color888(msg->r, msg->g, msg->b, true));
 }
-

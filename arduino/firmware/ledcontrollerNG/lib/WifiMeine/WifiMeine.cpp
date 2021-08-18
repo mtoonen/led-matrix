@@ -1,23 +1,23 @@
 #include <WifiMeine.h>
 
 // WIFI
-#define SPIWIFI       SPI  // The SPI port
-#define SPIWIFI_SS    13   // Chip select pin
-#define ESP32_RESETN  12   // Reset pin
-#define SPIWIFI_ACK   11   // a.k.a BUSY or READY pin
-#define ESP32_GPIO0   -1
+#define SPIWIFI SPI     // The SPI port
+#define SPIWIFI_SS 13   // Chip select pin
+#define ESP32_RESETN 12 // Reset pin
+#define SPIWIFI_ACK 11  // a.k.a BUSY or READY pin
+#define ESP32_GPIO0 -1
 
 //#define SERVER "led.meinetoonen.nl"
 #define SERVER "192.168.68.113"
-#define PATH   "/led/messages/unprocessed"
-#define PATHCHECK   "/led/messages/checkunprocessed"
-#define PATHPROCESSED   "/led/messages/processed/"
-  // your network key Index number (needed only for WEP)
+#define PATH "/led/messages/unprocessed"
+#define PATHCHECK "/led/messages/checkunprocessed"
+#define PATHPROCESSED "/led/messages/processed/"
+// your network key Index number (needed only for WEP)
 WiFiClient client;
 ReadBufferingClient bufferedClient{client, 64};
 
-WifiMeine::WifiMeine(){
-  
+WifiMeine::WifiMeine()
+{
 }
 
 void WifiMeine::initWifi()
@@ -56,24 +56,27 @@ void WifiMeine::initWifi()
   printWifiStatus();
 }
 
-boolean WifiMeine::checkServer(){
-//  Serial.println("checkserver");
+boolean WifiMeine::checkServer()
+{
+  //  Serial.println("checkserver");
   doRequest(PATHCHECK);
   String s = bufferedClient.readString();
-  Serial.print("answer:"); Serial.println(s);
-  if(s.equals("1")){
+  if (s.equals("1"))
+  {
     return true;
-  }else{
+  }
+  else
+  {
     return false;
   }
-
 }
 
-LedMessage* WifiMeine::readServer()
+LedMessage *WifiMeine::readServer()
 {
-  matrixThread->check();
+  mmatrix->setLoading(15);
   doRequest(PATH);
- // matrixThread.check();
+  mmatrix->setLoading(35);
+  // matrixThread.check();
   //matrixThread.check();
   // Allocate the JSON document
   // Use arduinojson.org/v6/assistant to compute the capacity.
@@ -81,10 +84,12 @@ LedMessage* WifiMeine::readServer()
 
   const size_t capacity = 192; // JSON_OBJECT_SIZE(3) + JSON_ARRAY_SIZE(2) + 160;
   DynamicJsonDocument doc(capacity);
+
   //matrixThread.check();
   Serial.println("json parsed");
   // Parse JSON object
   DeserializationError error = deserializeJson(doc, bufferedClient);
+
   if (error)
   {
     Serial.print(F("deserializeJson() failed: "));
@@ -94,13 +99,15 @@ LedMessage* WifiMeine::readServer()
     return NULL;
   }
   Serial.println("deserialized");
+  mmatrix->setLoading(55);
 
   LedMessage *m = parseInput(doc);
   Serial.println("iput parsed");
 
   // Disconnect
- client.stop();
+  client.stop();
   Serial.println("stopped");
+  mmatrix->setLoading(75);
   return m;
 }
 
@@ -111,12 +118,13 @@ void WifiMeine::writeMessageProcessed(int id)
   String path = PATHPROCESSED + id;
   Serial.println("Padje:" + path);
   doRequest(PATHPROCESSED + String(id));
-
+  matrixThread->check();
   // Disconnect
   client.stop();
+  matrixThread->check();
 }
 
-LedMessage* WifiMeine::parseInput(DynamicJsonDocument doc)
+LedMessage *WifiMeine::parseInput(DynamicJsonDocument doc)
 {
   LedMessage *m = new LedMessage();
 
@@ -155,19 +163,22 @@ LedMessage* WifiMeine::parseInput(DynamicJsonDocument doc)
 void WifiMeine::printLedMessage(LedMessage *lm)
 {
   Serial.println("*****");
-  Serial.print("id: "); Serial.println(lm->id);
-  Serial.print("payload: "); Serial.println(lm->payload);
-  Serial.print("type: "); Serial.println(lm->type);
-  Serial.print("processed: "); Serial.println(lm->processed);
+  Serial.print("id: ");
+  Serial.println(lm->id);
+  Serial.print("payload: ");
+  Serial.println(lm->payload);
+  Serial.print("type: ");
+  Serial.println(lm->type);
+  Serial.print("processed: ");
+  Serial.println(lm->processed);
 }
-
 
 int WifiMeine::doRequest(String requestPath)
 {
 
- // Serial.println("\nStarting connection to server...");
- // Serial.print("Request ");
- // Serial.println(requestPath);
+  // Serial.println("\nStarting connection to server...");
+  // Serial.print("Request ");
+  // Serial.println(requestPath);
 
   // Connect to HTTP server
 
@@ -177,7 +188,7 @@ int WifiMeine::doRequest(String requestPath)
     Serial.println(F("Connection failed"));
     return -1;
   }
- // Serial.println("connected");
+  // Serial.println("connected");
   // Send HTTP request
   client.println("GET " + requestPath + " HTTP/1.0");
   client.println(F("Host: " SERVER));
@@ -188,7 +199,7 @@ int WifiMeine::doRequest(String requestPath)
     client.stop();
     return -1;
   }
- // Serial.println("request done");
+  // Serial.println("request done");
 
   // Check HTTP status
   char status[32] = {0};
@@ -200,7 +211,7 @@ int WifiMeine::doRequest(String requestPath)
     client.stop();
     return -1;
   }
- // Serial.println("bytes read");
+  // Serial.println("bytes read");
 
   // Skip HTTP headers
   char endOfHeaders[] = "\r\n\r\n";
@@ -210,14 +221,14 @@ int WifiMeine::doRequest(String requestPath)
     client.stop();
     return -1;
   }
-  Serial.println("request done");
   return 1;
 }
 
-void WifiMeine::setMatrix(TimedAction& mT){
+void WifiMeine::setMatrix(TimedAction &mT, MatrixMeine &mm)
+{
   matrixThread = &mT;
+  mmatrix = &mm;
 }
-
 
 void WifiMeine::printWifiStatus()
 {
